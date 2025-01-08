@@ -12,7 +12,7 @@ setup(
     author='Dipanshu',
     author_email='dipanshu0919@gmail.com',
     url='https://github.com/Dipanshu0919/dapro',
-    packages=find_packages(),
+    packages=find_packages(include=['telegram', 'telegram.*']),
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
