@@ -11,7 +11,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Dipanshu',
     author_email='dipanshu0919@gmail.com',
-    url='https://github.com/Dipanshu0919/DATOE',
+    url='https://github.com/Dipanshu0919/dapro',
     packages=find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
