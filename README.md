@@ -5,7 +5,7 @@ DATOE simplifies handling `.eval` and `.open` commands in Python Telegram bots.
 ```bash
 pip install DATOE
 ```
-## USAGE
+## Usage
 ```bot.py
 from DATOE import eval_code_handler, open_file_handler
 
