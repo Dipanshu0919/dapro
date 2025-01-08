@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
 
 setup(
     name='dapro',
-    version='0.1.2',
+    version='0.1.3',
     description='A library to simplify eval and file handling in Telegram bots.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -18,6 +18,5 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.6',
     license='GPL-3.0',
 )
