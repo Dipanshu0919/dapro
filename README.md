@@ -1,5 +1,5 @@
 # dapro
-DATOE simplifies handling `.eval` and `.open` commands in Python Telegram bots.
+dapro = Dipanshu Agarwal Programs
 
 ## Installation
 ```bash
@@ -7,7 +7,7 @@ pip install dapro
 ```
 ## Usage
 ```bot.py
-from dapro import daeval, daopen
+from dapro.telegram.telethon import daeval, daopen
 
 OWNERS = "OWNER_ID"
 
