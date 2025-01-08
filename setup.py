@@ -4,7 +4,7 @@ with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='DAPRO',
+    name='dapro',
     version='0.1.0',
     description='A library to simplify eval and file handling in Telegram bots.',
     long_description=long_description,
