@@ -31,7 +31,7 @@ async def daeval(event, client, owners):
     exc, stdout, stderr = None, None, None
 
     try:
-        await _aexec(cmd, client=client, event=event)
+        await _aexec(cmd, client=client, event=event, owners=owners)
     except Exception:
         exc = traceback.format_exc()
 
@@ -61,14 +61,23 @@ async def _aexec(code: str, **kwargs):
         code: Python code as a string.
         kwargs: Variables to pass to the execution scope.
     """
+    """Execute code dynamically with provided variables."""
     local_vars = {}
+    global_vars = {
+        "client": kwargs.get("client"),
+        "event": kwargs.get("event"),
+        "OWNERS": kwargs.get("owners"),
+        "__name__": "__main__"
+    }
+
     exec(
-        "async def __aexec(client, event):\n"
-        + "\n".join(f"    {line}" for line in code.split("\n")),
-        kwargs,
-        local_vars,
+        f"async def __aexec(client, event):\n"
+        + "\n".join(f"    {line}" for line in code.strip().split("\n")),
+        global_vars,
+        local_vars
     )
-    return await local_vars["__aexec"](kwargs["client"], kwargs["event"])
+
+    return await local_vars["__aexec"](global_vars["client"], global_vars["event"])
 
 
 async def daopen(event, client):
