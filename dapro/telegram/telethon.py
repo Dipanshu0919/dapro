@@ -3,59 +3,83 @@ import sys
 import traceback
 import os
 
+__all__ = ["daeval", "daopen"]
+
 async def daeval(event, client, owners):
-    """Handle eval commands directly."""
-    if not event.sender.id in owners:
+    """
+    Evaluates arbitrary Python code in Telegram using `.eval` command.
+    
+    Parameters:
+        event: The Telegram event (usually a Message).
+        client: The Telethon client instance.
+        owners: A list of authorized user IDs.
+    """
+    if event.sender_id not in owners:
         return
+
     reply = await event.reply("**×•× Processing.... ×•×**")
-    cmd = event.text.split(" ", maxsplit=1)[1] if " " in event.text else None
+    cmd = event.raw_text.split(" ", maxsplit=1)[1] if " " in event.raw_text else None
+
     if not cmd:
         await reply.edit("Provide some code to evaluate.")
         return
 
-    old_stderr = sys.stderr
-    old_stdout = sys.stdout
+    old_stdout, old_stderr = sys.stdout, sys.stderr
     redirected_output = sys.stdout = io.StringIO()
     redirected_error = sys.stderr = io.StringIO()
 
-    stdout, stderr, exc = None, None, None
+    exc, stdout, stderr = None, None, None
 
     try:
-        await aexec(cmd, client, event)
+        await _aexec(cmd, client=client, event=event)
     except Exception:
         exc = traceback.format_exc()
 
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
-
     sys.stdout = old_stdout
     sys.stderr = old_stderr
 
-    evaluation = ""
+    result = ""
     if exc:
-        evaluation = f"`{exc.strip()}`"
+        result = f"`{exc.strip()}`"
     elif stderr:
-        evaluation = f"`{stderr.strip()}`"
+        result = f"`{stderr.strip()}`"
     elif stdout:
-        evaluation = f"`{stdout.strip()}`"
+        result = f"`{stdout.strip()}`"
     else:
-        evaluation = "**Success:**"
-    await reply.edit(f"**•• Eval ••**\n`{cmd}`\n\n**•• Output ••**\n{evaluation}")
+        result = "**Success:**"
+
+    await reply.edit(f"**•• Eval ••**\n`{cmd}`\n\n**•• Output ••**\n{result}")
 
 
-async def aexec(code, client, event):
+async def _aexec(code: str, **kwargs):
+    """
+    Helper function to `exec` async code in an isolated local scope.
+
+    Parameters:
+        code: Python code as a string.
+        kwargs: Variables to pass to the execution scope.
+    """
     local_vars = {}
-    """Helper for eval_code to execute async code."""
     exec(
-        "async def __aexec(client, event): "
-        + "".join(f"\n {line}" for line in code.split("\n"))
+        "async def __aexec(client, event):\n"
+        + "\n".join(f"    {line}" for line in code.split("\n")),
+        kwargs,
+        local_vars,
     )
-    return await local_vars["__aexec"](client, event)
+    return await local_vars["__aexec"](kwargs["client"], kwargs["event"])
 
 
 async def daopen(event, client):
-    """Handle file opening directly."""
-    if not event.reply_to:
+    """
+    Opens a file sent in a replied-to message, sends its contents in chunks.
+
+    Parameters:
+        event: The Telegram event (usually a Message).
+        client: The Telethon client instance.
+    """
+    if not event.is_reply:
         await event.reply("Please reply to a file!")
         return
 
