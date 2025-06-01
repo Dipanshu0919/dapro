@@ -44,12 +44,13 @@ async def daeval(event, client, owners):
 
 
 async def aexec(code, client, event):
+    local_vars = {}
     """Helper for eval_code to execute async code."""
     exec(
         "async def __aexec(client, event): "
         + "".join(f"\n {line}" for line in code.split("\n"))
     )
-    return await locals()["__aexec"](client, event)
+    return await local_vars["__aexec"](client, event)
 
 
 async def daopen(event, client):
