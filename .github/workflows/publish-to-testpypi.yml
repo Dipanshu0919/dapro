@@ -1,12 +1,14 @@
 name: Publish to TestPyPI
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Required to push version bump commit
 
     steps:
       - name: Checkout code
@@ -24,10 +26,18 @@ jobs:
 
       - name: Bump patch version
         run: |
-          bump2version patch --allow-dirty
+          bump2version patch
 
       - name: Show updated version
         run: grep "version=" setup.py
+
+      - name: Commit bumped version
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add setup.py .bumpversion.cfg
+          git commit -m "Bump version [skip ci]"
+          git push
 
       - name: Build dist files
         run: python -m build
