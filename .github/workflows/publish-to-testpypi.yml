@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Required for committing and pushing
+      contents: write  # Needed for pushing commits
 
     steps:
       - name: Checkout code with full history
@@ -28,20 +28,22 @@ jobs:
 
       - name: Set up Git identity
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "dipanshu0919"
+          git config user.email "dipanshu0919@gmail.com"
 
       - name: Bump patch version
-        run: |
-          bump2version patch
+        run: bump2version patch
 
       - name: Show updated version
         run: grep "version=" setup.py
 
-      - name: Pull latest changes before push
+      - name: Sync local branch with remote main
         run: |
-          git pull --rebase origin main
-          git push
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Push bumped version
+        run: git push --force
 
       - name: Build dist files
         run: python -m build
