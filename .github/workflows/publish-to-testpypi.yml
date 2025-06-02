@@ -36,8 +36,9 @@ jobs:
       - name: Show updated version
         run: grep "version=" setup.py
 
-      - name: Push bumped version
+      - name: Pull latest changes before push
         run: |
+          git pull --rebase origin main
           git push
 
       - name: Build dist files
