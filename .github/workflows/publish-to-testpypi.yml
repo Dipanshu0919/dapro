@@ -1,14 +1,14 @@
 name: Publish to TestPyPI
 
 on:
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Needed for pushing commits
+      contents: write
 
     steps:
       - name: Checkout code with full history
@@ -31,19 +31,20 @@ jobs:
           git config user.name "dipanshu0919"
           git config user.email "dipanshu0919@gmail.com"
 
+      - name: Sync local branch with remote main
+        run: |
+          git fetch origin main
+          git pull --rebase origin main
+
       - name: Bump patch version
         run: bump2version patch
 
       - name: Show updated version
         run: grep "version=" setup.py
 
-      - name: Sync local branch with remote main
+      - name: Commit and push bumped version
         run: |
-          git fetch origin main
-          git reset --hard origin/main
-
-      - name: Push bumped version
-        run: git push --force
+          git push origin main
 
       - name: Clean old dist files
         run: rm -rf dist/*
@@ -56,4 +57,4 @@ jobs:
           TWINE_USERNAME: ${{ secrets.TEST_PYPI_USER }}
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_PASS }}
         run: |
-          twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+          twine upload --verbose --repository-url https://test.pypi.org/legacy/ dist/*
