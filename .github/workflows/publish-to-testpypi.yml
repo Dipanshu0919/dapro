@@ -11,8 +11,10 @@ jobs:
       contents: write  # Required for committing and pushing
 
     steps:
-      - name: Checkout code
+      - name: Checkout code with full history
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
