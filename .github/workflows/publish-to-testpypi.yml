@@ -45,6 +45,9 @@ jobs:
       - name: Push bumped version
         run: git push --force
 
+      - name: Clean old dist files
+        run: rm -rf dist/*
+
       - name: Build dist files
         run: python -m build
 
