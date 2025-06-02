@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Required to push version bump commit
+      contents: write  # Required for committing and pushing
 
     steps:
       - name: Checkout code
@@ -24,6 +24,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install bump2version build twine
 
+      - name: Set up Git identity
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
       - name: Bump patch version
         run: |
           bump2version patch
@@ -31,12 +36,8 @@ jobs:
       - name: Show updated version
         run: grep "version=" setup.py
 
-      - name: Commit bumped version
+      - name: Push bumped version
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add setup.py .bumpversion.cfg
-          git commit -m "Bump version [skip ci]"
           git push
 
       - name: Build dist files
